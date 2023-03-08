@@ -1,4 +1,4 @@
-import { Container, Message } from "./styles";
+import { Container, Message } from './styles';
 
 interface ListEmptyProps {
   message: string;
