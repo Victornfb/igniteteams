@@ -20,6 +20,10 @@ export default function Groups() {
     navigation.navigate("newGroups");
   }
 
+  function handleOpenGroup(name: string) {
+    navigation.navigate("players", { group: name })
+  }
+
   useFocusEffect(
     useCallback(
       () => {
@@ -41,7 +45,12 @@ export default function Groups() {
       <FlatList
         data={groups}
         keyExtractor={(item) => item}
-        renderItem={({ item }) => <GroupCard title={item} />}
+        renderItem={({ item }) => (
+          <GroupCard
+            title={item}
+            onPress={() => handleOpenGroup(item)}
+          />
+        )}
         ListEmptyComponent={() => (
           <ListEmpty message="Nenhum grupo encontrado" />
         )}

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FlatList } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, FlatList } from 'react-native';
 
 import { Button } from '@components/Button';
 import { ButtonStyleTypes } from '@components/Button/styles';
@@ -11,6 +11,11 @@ import Input from '@components/Input';
 import ListEmpty from '@components/ListEmpty';
 import { PlayerCard } from '@components/PlayerCard';
 import { useRoute } from '@react-navigation/native';
+import {
+  PlayerDto,
+  createPlayerByGroup,
+  findAllPlayersByGroupAndTeam
+} from '@storage/player';
 
 import { Container, Form, HeaderList, NumberOfPlayers } from './styles';
 
@@ -19,21 +24,37 @@ type RouteParams = {
 }
 
 export default function Players() {
+  const [newPlayerName, setNewPlayerName] = useState("");
   const [team, setTeam] = useState("Time A");
-  const [players, setPlayers] = useState([
-    "Victor",
-    "Lucas",
-    "Fernando",
-    "Daniel",
-    "Rafael",
-    "Wellington",
-    "João",
-    "Alex",
-    "Ariel",
-  ]);
+  const [players, setPlayers] = useState<Array<PlayerDto>>([]);
 
   const  route = useRoute();
   const { group } = route.params as RouteParams;
+
+  async function handleAddPlayer() {
+    try{
+      await createPlayerByGroup({ name: newPlayerName, team }, group);
+
+      const players = await findAllPlayersByGroupAndTeam(group, team);
+
+      setPlayers(players);
+      setNewPlayerName("");
+    } catch (err: any) {
+      Alert.alert(
+        "Novo Jogador",
+        err?.message || "Não foi possível criar um novo jogador."
+      );
+    }
+  }
+
+  useEffect(() => {
+    async function fetchPlayersByTeam() {
+      const players = await findAllPlayersByGroupAndTeam(group, team);
+      setPlayers(players);
+    }
+
+    fetchPlayersByTeam();
+  }, [team])
 
   return (
     <Container>
@@ -44,8 +65,16 @@ export default function Players() {
       />
 
       <Form>
-        <Input placeholder="Nome da pessoa" autoCorrect={false} />
-        <ButtonIcon icon="add" />
+        <Input
+          placeholder="Nome do(a) jogador(a)"
+          autoCorrect={false}
+          onChangeText={setNewPlayerName}
+          value={newPlayerName}
+        />
+        <ButtonIcon
+          icon="add"
+          onPress={handleAddPlayer}
+        />
       </Form>
 
       <HeaderList>
@@ -66,9 +95,9 @@ export default function Players() {
 
       <FlatList
         data={players}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <PlayerCard name={item} onRemove={() => {}} />
+          <PlayerCard name={item.name} onRemove={() => {}} />
         )}
         ListEmptyComponent={() => (
           <ListEmpty message="Não há jogares nesse time ainda" />

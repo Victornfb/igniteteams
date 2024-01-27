@@ -15,7 +15,7 @@ export default function ButtonIcon({
   ...rest
 }: ButtonIconProps) {
   return (
-    <Container>
+    <Container {...rest}>
       <Icon name={icon} type={type} />
     </Container>
   );
