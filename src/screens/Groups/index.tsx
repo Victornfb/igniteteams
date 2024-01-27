@@ -7,16 +7,13 @@ import { Header } from "@components/Header";
 import { Highlight } from "@components/Highlight";
 import ListEmpty from "@components/ListEmpty";
 
-import { Container } from "./styles";
 import { useNavigation } from "@react-navigation/native";
+import { Container } from "./styles";
 
 export default function Groups() {
   const navigation = useNavigation();
 
-  const [groups, setGroups] = useState<string[]>([
-    // "Grupo 🔑 dos Cornos",
-    // "Novo ano velho 🎉",
-  ]);
+  const [groups, setGroups] = useState<string[]>([]);
 
   function handleNewGroup() {
     navigation.navigate("newGroups");
