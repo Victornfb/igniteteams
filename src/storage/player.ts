@@ -51,3 +51,17 @@ export async function findAllPlayersByGroupAndTeam(
 
   return updatedPlayers;
 }
+
+export async function removePlayerByGroup(
+  name: string,
+  group: string
+): Promise<void> {
+  const storedPlayers = await findAllPlayersByGroup(group);
+
+  const updatedPlayers = storedPlayers.filter((p) => p.name !== name);
+
+  await AsyncStorage.setItem(
+    `${PLAYER_COLLECTION}-${group}`,
+    JSON.stringify(updatedPlayers)
+  );
+}
