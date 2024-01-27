@@ -40,6 +40,8 @@ export default function NewGroup() {
         <Input
           placeholder="Nome do grupo"
           onChangeText={setGroup}
+          onSubmitEditing={handleNewGroup}
+          returnKeyType='done'
         />
         <Button title="Criar" style={{ marginTop: 20 }} onPress={handleNewGroup} />
       </Content>

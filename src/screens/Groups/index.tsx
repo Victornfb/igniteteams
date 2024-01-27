@@ -7,14 +7,16 @@ import { Header } from "@components/Header";
 import { Highlight } from "@components/Highlight";
 import ListEmpty from "@components/ListEmpty";
 
+import { Loading } from "@components/Loading";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { findAllGroups } from "@storage/group";
 import { Container } from "./styles";
 
 export default function Groups() {
-  const navigation = useNavigation();
-
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [groups, setGroups] = useState<string[]>([]);
+
+  const navigation = useNavigation();
 
   function handleNewGroup() {
     navigation.navigate("newGroups");
@@ -28,10 +30,12 @@ export default function Groups() {
     useCallback(
       () => {
         async function fetchGroups() {
+          setIsLoading(true);
           const groups = await findAllGroups();
           setGroups(groups);
+          setIsLoading(false);
         }
-    
+
         fetchGroups();
       }, []
     )
@@ -42,20 +46,22 @@ export default function Groups() {
       <Header />
       <Highlight title="Grupos" subtitle="Jogue com seu grupo de amigos!" />
 
-      <FlatList
-        data={groups}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <GroupCard
-            title={item}
-            onPress={() => handleOpenGroup(item)}
-          />
-        )}
-        ListEmptyComponent={() => (
-          <ListEmpty message="Nenhum grupo encontrado" />
-        )}
-        contentContainerStyle={groups.length === 0 && { flex: 1 }}
-      />
+      {isLoading ? <Loading/> :
+        <FlatList
+          data={groups}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <GroupCard
+              title={item}
+              onPress={() => handleOpenGroup(item)}
+            />
+          )}
+          ListEmptyComponent={() => (
+            <ListEmpty message="Nenhum grupo encontrado" />
+          )}
+          contentContainerStyle={groups.length === 0 && { flex: 1 }}
+        />
+      }
 
       <Button title="Criar Grupo" onPress={handleNewGroup} />
     </Container>
